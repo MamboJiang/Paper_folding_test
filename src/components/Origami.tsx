@@ -635,8 +635,44 @@ export const Origami = forwardRef<OrigamiHandle, {
       </group>
 
       <group {...bind() as any} ref={groupRef as any}>
-        <mesh castShadow receiveShadow geometry={baseGeometry} material={materials}>
-        </mesh>
+        <mesh 
+          castShadow 
+          receiveShadow 
+          geometry={baseGeometry} 
+          material={materials}
+          onPointerMove={(e) => {
+            if (e.pointerType === 'mouse' && !activeLine && foldPhase.current === 'idle') {
+              const currV = getLocalXY([e.clientX, e.clientY]);
+              let bestLine: LineDef | null = null;
+              let minDist = Infinity;
+              for (const line of ALL_LINES) {
+                const mouseV3 = new THREE.Vector3(currV.x, currV.y, 0);
+                const d = Math.abs(mouseV3.clone().sub(line.P0).dot(line.N));
+                if (d < minDist) {
+                  minDist = d;
+                  bestLine = line;
+                }
+              }
+              if (minDist > 1.5) bestLine = null;
+              
+              setPreviewLine((prev) => prev?.id === bestLine?.id ? prev : bestLine);
+            }
+          }}
+          onPointerOut={(e) => {
+            if (e.pointerType === 'mouse' && !activeLine && foldPhase.current === 'idle') {
+              setPreviewLine(null);
+            }
+          }}
+          onPointerDown={(e) => {
+            if (e.pointerType === 'mouse' && !activeLine && foldPhase.current === 'idle') {
+              if (previewLine) {
+                setActiveLine(previewLine);
+                setPreviewLine(null);
+                updateState();
+              }
+            }
+          }}
+        />
       </group>
     </group>
   );
