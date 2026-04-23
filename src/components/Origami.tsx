@@ -513,60 +513,13 @@ export const Origami = forwardRef<OrigamiHandle, {
   });
 
   const materials = useMemo(() => {
-    // Generate custom origami pattern texture using a 1024x1024 Canvas
-    const canvas = document.createElement('canvas');
-    canvas.width = 1024;
-    canvas.height = 1024;
-    const ctx = canvas.getContext('2d')!;
-    
-    // Original Paper Color (Kraft tan/orange), White, and Black
+    // Original Paper Color (Kraft tan/orange)
     const BASE_COLOR = '#E0A96D';
-    const WHITE = '#FFFFFF';
-    const BLACK = '#222222';
-    
-    // Fill the top half (Y: 0 to 512) with White background
-    ctx.fillStyle = WHITE;
-    ctx.fillRect(0, 0, 1024, 512);
-    
-    // Draw left-top 4x4 region diamond (Base color)
-    ctx.fillStyle = BASE_COLOR;
-    ctx.beginPath();
-    ctx.moveTo(256, 0);       // top
-    ctx.lineTo(512, 256);     // right
-    ctx.lineTo(256, 512);     // bottom
-    ctx.lineTo(0, 256);       // left
-    ctx.closePath();
-    ctx.fill();
-
-    // Draw right-top 4x4 region diamond (Base color)
-    ctx.beginPath();
-    ctx.moveTo(768, 0);       // top
-    ctx.lineTo(1024, 256);    // right
-    ctx.lineTo(768, 512);     // bottom
-    ctx.lineTo(512, 256);     // left
-    ctx.closePath();
-    ctx.fill();
-
-    // Fill the lower half left 4x2 region (Base color)
-    ctx.fillStyle = BASE_COLOR;
-    ctx.fillRect(0, 512, 256, 512);
-
-    // Fill the lower half center 4x4 region (Black)
-    ctx.fillStyle = BLACK;
-    ctx.fillRect(256, 512, 512, 512);
-
-    // Fill the lower half right 4x2 region (Base color)
-    ctx.fillStyle = BASE_COLOR;
-    ctx.fillRect(768, 512, 256, 512);
-
-    const texture = new THREE.CanvasTexture(canvas);
-    texture.colorSpace = THREE.SRGBColorSpace;
-    texture.anisotropy = 4; // Keeps diagonal lines sharp
 
     const frontMat = new THREE.MeshStandardMaterial({
       roughness: 0.8,
       metalness: 0,
-      map: texture,
+      color: BASE_COLOR,
       side: THREE.FrontSide,
       dithering: true,
       polygonOffset: true,
